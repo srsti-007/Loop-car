@@ -5,3 +5,5 @@ A **Car Rental Web Application** is a dynamic digital platform that streamlines 
  <img width="1920" height="1152" alt="Image" src="https://github.com/user-attachments/assets/4314174b-4825-49e6-9bc1-1bb6a9c23e69" />
 
 <img width="1920" height="1152" alt="Image" src="https://github.com/user-attachments/assets/77a4fe3d-bdee-445f-b64f-8fd2587ae615" />
+
+<img width="1920" height="1152" alt="Image" src="https://github.com/user-attachments/assets/4be53b0e-c0a9-42de-8b70-a49ddf3cae0d" />

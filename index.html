@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoopCar - Premium Car Rentals India</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css for entrance animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <!-- html2pdf.js Library CDN for downloading the form -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slateBackground: '#F1F5F9', 
+                        slateCard: '#FFFFFF',       
+                        slateTextDark: '#1E293B',   
+                        slateTextMuted: '#64748B',  
+                        brandAccent: '#06B6D4',     
+                        brandAccentHover: '#0891B2',
+                        brandNavbar: '#0F172A'      
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .reveal-on-scroll { opacity: 0; }
+        .modal-active { overflow: hidden; }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="font-sans text-slateTextDark bg-slateBackground overflow-x-hidden">
+
+    <!-- 1. HEADER / NAVBAR -->
+    <header class="bg-brandNavbar text-white sticky top-0 z-50 shadow-sm animate__animated animate__fadeInDown">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" onclick="navigateToSection(event, 'body')" class="flex items-center space-x-2 text-xl font-bold tracking-wide group">
+                <i class="fa-solid fa-arrows-spin text-brandAccent text-2xl group-hover:rotate-180 transition-transform duration-500"></i>
+                <span>Loop<span class="text-brandAccent">Car</span></span>
+            </a>
+            
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-300">
+                <a href="#" onclick="navigateToSection(event, 'body')" class="nav-link text-brandAccent border-b-2 border-brandAccent pb-1 transition-all duration-200">Home</a>
+                <a href="#fleet-section" onclick="navigateToSection(event, 'fleet-section')" class="nav-link hover:text-white transition-all duration-200">Our Fleet</a>
+                <a href="#features-section" onclick="navigateToSection(event, 'features-section')" class="nav-link hover:text-white transition-all duration-200">Services</a>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <button onclick="openModal('login-modal')" class="border border-slate-500 hover:border-white px-4 py-1.5 rounded text-sm font-medium transition">Login</button>
+                <button onclick="openModal('signup-modal')" class="bg-brandAccent hover:bg-brandAccentHover text-white px-4 py-1.5 rounded text-sm font-semibold shadow-md transition transform hover:-translate-y-0.5">Sign Up</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. HERO SECTION -->
+    <section class="relative bg-cover bg-center bg-no-repeat h-[500px] flex items-center animate__animated animate__fadeIn" style="background-image: linear-gradient(to right, rgba(15, 23, 42, 0.8) 35%, rgba(15, 23, 42, 0.3) 100%), url('https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1800&q=80');">
+        <div class="max-w-7xl mx-auto px-6 w-full text-white pb-12 z-10">
+            <h1 class="text-4xl md:text-5xl font-extrabold max-w-xl leading-tight mb-4 animate__animated animate__fadeInLeft animate__delay-1s">
+                Find Your Perfect Car For Every Indian Road
+            </h1>
+            <p class="text-slate-300 max-w-md text-base mb-6 animate__animated animate__fadeInLeft animate__delay-1s" style="animation-delay: 1.2s;">
+                Premium self-drive car rentals across South & Western India's top metropolitan and cultural hubs. Fully sanitized and trackable.
+            </p>
+            <a href="#fleet-section" onclick="navigateToSection(event, 'fleet-section')" class="inline-block bg-brandAccent hover:bg-brandAccentHover text-white px-6 py-2.5 rounded font-bold text-sm shadow-lg transition transform hover:-translate-y-1 animate__animated animate__fadeInUp animate__delay-1s" style="animation-delay: 1.4s;">
+                Explore Fleet
+            </a>
+        </div>
+    </section>
+
+    <!-- 3. SEARCH BAR / BOOKING WIDGET -->
+    <div class="max-w-6xl mx-auto px-4 -mt-16 relative z-20 reveal-on-scroll" data-animation="animate__fadeInUp">
+        <form id="search-form" onsubmit="handleSearch(event)" class="bg-slateCard rounded-xl shadow-xl p-4 md:p-6 border border-slate-100">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                
+                <!-- Location Selection Dropdown -->
+                <div class="flex items-center space-x-3 p-2 border-b md:border-b-0 md:border-r border-slate-200 group">
+                    <i class="fa-solid fa-location-dot text-slateTextMuted group-hover:text-brandAccent text-lg transition-colors"></i>
+                    <div class="w-full">
+                        <label class="block text-xs font-bold text-slateTextDark uppercase tracking-wider">Pick-up City</label>
+                        <select id="search-city" class="w-full text-sm text-slateTextMuted focus:outline-none bg-transparent mt-0.5 appearance-none cursor-pointer font-medium" required>
+                            <option value="all">All Available Hubs</option>
+                            <optgroup label="Karnataka">
+                                <option value="bengaluru">Bengaluru (BLR)</option>
+                                <option value="mysuru">Mysuru (MYS)</option>
+                                <option value="hubballi">Hubballi (HBX)</option>
+                            </optgroup>
+                            <optgroup label="Kerala">
+                                <option value="kochi">Kochi (COK)</option>
+                                <option value="thiruvananthapuram">Thiruvananthapuram (TRV)</option>
+                                <option value="kozhikode">Kozhikode (CCJ)</option>
+                            </optgroup>
+                            <optgroup label="Mumbai & Area">
+                                <option value="mumbai">Mumbai (BOM)</option>
+                                <option value="pune">Pune (PNQ)</option>
+                                <option value="nashik">Nashik (ISK)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Pick-up Date -->
+                <div class="flex items-center space-x-3 p-2 border-b md:border-b-0 md:border-r border-slate-200 group">
+                    <i class="fa-regular fa-calendar text-slateTextMuted group-hover:text-brandAccent text-lg transition-colors"></i>
+                    <div class="w-full">
+                        <label class="block text-xs font-bold text-slateTextDark uppercase tracking-wider">Pick-up Date</label>
+                        <input type="text" id="pickup-date" placeholder="Select date" onfocus="(this.type='date')" class="w-full text-sm text-slateTextMuted focus:outline-none mt-0.5 placeholder-slate-400" required>
+                    </div>
+                </div>
+
+                <!-- Drop-off Date -->
+                <div class="flex items-center space-x-3 p-2 border-b md:border-b-0 md:border-r border-slate-200 group">
+                    <i class="fa-regular fa-calendar text-slateTextMuted group-hover:text-brandAccent text-lg transition-colors"></i>
+                    <div class="w-full">
+                        <label class="block text-xs font-bold text-slateTextDark uppercase tracking-wider">Drop-off Date</label>
+                        <input type="text" id="dropoff-date" placeholder="Select date" onfocus="(this.type='date')" class="w-full text-sm text-slateTextMuted focus:outline-none mt-0.5 placeholder-slate-400" required>
+                    </div>
+                </div>
+
+                <!-- Car Type & Button -->
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4 p-2 group">
+                    <div class="flex items-center space-x-3 w-full">
+                        <i class="fa-solid fa-car text-slateTextMuted group-hover:text-brandAccent text-lg transition-colors"></i>
+                        <div class="w-full">
+                            <label class="block text-xs font-bold text-slateTextDark uppercase tracking-wider">Car Category</label>
+                            <select id="search-category" class="w-full text-sm text-slateTextMuted focus:outline-none bg-transparent mt-0.5 appearance-none cursor-pointer">
+                                <option value="all">All Categories</option>
+                                <option value="suv">SUVs</option>
+                                <option value="sedan">Sedans</option>
+                                <option value="luxury">Luxury</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full md:w-auto bg-brandAccent hover:bg-brandAccentHover text-white font-bold px-6 py-3 rounded-lg shadow-md transition whitespace-nowrap text-sm transform hover:-translate-y-0.5">
+                        Search
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <!-- 4. FLEET CATEGORIES SECTION -->
+    <section id="fleet-section" class="max-w-7xl mx-auto px-6 py-16 space-y-16">
+        
+        <div class="text-center md:text-left reveal-on-scroll" data-animation="animate__fadeInLeft">
+            <h2 class="text-3xl font-extrabold text-slateTextDark">Our Regional Fleet Inventory</h2>
+            <p class="text-sm text-slateTextMuted mt-1">Explore certified operational vehicles available at our network pick-up spaces.</p>
+        </div>
+
+        <!-- No Results Warning -->
+        <div id="no-results" class="hidden text-center py-12 bg-white rounded-xl border border-dashed border-slate-300 animate__animated animate__fadeIn">
+            <i class="fa-solid fa-car-crack text-slateTextMuted text-5xl mb-4"></i>
+            <h3 class="text-lg font-bold text-slateTextDark">No matching vehicles found</h3>
+            <p class="text-sm text-slateTextMuted mt-1">Try picking a different location or category criteria combo.</p>
+            <button onclick="resetSearch()" class="mt-4 bg-slateTextDark text-white text-xs px-4 py-2 rounded hover:bg-slate-700 transition">Reset Search Filters</button>
+        </div>
+
+        <!-- CATEGORY 1: SUVs -->
+        <div id="category-suv" class="car-category-block space-y-6" data-type="suv">
+            <div class="flex justify-between items-center border-b border-slate-200 pb-3 reveal-on-scroll" data-animation="animate__fadeIn">
+                <h3 class="text-xl font-bold text-slateTextDark flex items-center space-x-2">
+                    <i class="fa-solid fa-hill-rockslide text-brandAccent"></i>
+                    <span>Sports Utility Vehicles (SUVs)</span>
+                </h3>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- SUV 1 - Bengaluru -->
+                <div onclick="openBooking('Toyota Fortuner', 6500, 'bengaluru')" class="car-card bg-slateCard border border-slate-100 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group overflow-hidden cursor-pointer reveal-on-scroll" data-city="bengaluru" data-animation="animate__fadeInUp">
+                    <div>
+                        <div class="relative w-full aspect-[16/9] overflow-hidden bg-slateBackground">
+                            <img src="https://images.unsplash.com/photo-1469285994282-454ceb49e63c?auto=format&fit=crop&w=600&q=80" alt="Toyota Fortuner" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 left-3 bg-brandNavbar/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm"><i class="fa-solid fa-location-dot text-brandAccent mr-1"></i>Bengaluru Hub</span>
+                        </div>
+                        <div class="p-5 flex justify-between items-start">
+                            <h4 class="font-bold text-slateTextDark text-base group-hover:text-brandAccent transition-colors">Toyota Fortuner</h4>
+                            <span class="text-brandAccent font-bold text-sm whitespace-nowrap ml-2">₹6,500 <span class="text-slateTextMuted text-xs font-normal">/ day</span></span>
+                        </div>
+                    </div>
+                    <div class="mx-5 mb-5 text-slateTextMuted text-xs flex items-center space-x-1.5 border-t border-slate-100 pt-3">
+                        <i class="fa-solid fa-sliders"></i><span>Automatic &bull; 7 Seats &bull; Diesel</span>
+                    </div>
+                </div>
+
+                <!-- SUV 2 - Kochi -->
+                <div onclick="openBooking('Mahindra XUV700', 4500, 'kochi')" class="car-card bg-slateCard border border-slate-100 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group overflow-hidden cursor-pointer reveal-on-scroll" data-city="kochi" data-animation="animate__fadeInUp">
+                    <div>
+                        <div class="relative w-full aspect-[16/9] overflow-hidden bg-slateBackground">
+                            <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&w=600&q=80" alt="Mahindra XUV700" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 left-3 bg-brandNavbar/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm"><i class="fa-solid fa-location-dot text-brandAccent mr-1"></i>Kochi Space</span>
+                        </div>
+                        <div class="p-5 flex justify-between items-start">
+                            <h4 class="font-bold text-slateTextDark text-base group-hover:text-brandAccent transition-colors">Mahindra XUV700</h4>
+                            <span class="text-brandAccent font-bold text-sm whitespace-nowrap ml-2">₹4,500 <span class="text-slateTextMuted text-xs font-normal">/ day</span></span>
+                        </div>
+                    </div>
+                    <div class="mx-5 mb-5 text-slateTextMuted text-xs flex items-center space-x-1.5 border-t border-slate-100 pt-3">
+                        <i class="fa-solid fa-sliders"></i><span>Automatic &bull; 7 Seats &bull; Petrol</span>
+                    </div>
+                </div>
+
+                <!-- SUV 3 - Mumbai -->
+                <div onclick="openBooking('Tata Safari Dark', 5000, 'mumbai')" class="car-card bg-slateCard border border-slate-100 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group overflow-hidden cursor-pointer reveal-on-scroll" data-city="mumbai" data-animation="animate__fadeInUp">
+                    <div>
+                        <div class="relative w-full aspect-[16/9] overflow-hidden bg-slateBackground">
+                            <img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=600&q=80" alt="Tata Safari" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 left-3 bg-brandNavbar/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm"><i class="fa-solid fa-location-dot text-brandAccent mr-1"></i>Mumbai Depot</span>
+                        </div>
+                        <div class="p-5 flex justify-between items-start">
+                            <h4 class="font-bold text-slateTextDark text-base group-hover:text-brandAccent transition-colors">Tata Safari Edition</h4>
+                            <span class="text-brandAccent font-bold text-sm whitespace-nowrap ml-2">₹5,000 <span class="text-slateTextMuted text-xs font-normal">/ day</span></span>
+                        </div>
+                    </div>
+                    <div class="mx-5 mb-5 text-slateTextMuted text-xs flex items-center space-x-1.5 border-t border-slate-100 pt-3">
+                        <i class="fa-solid fa-sliders"></i><span>Manual &bull; 6 Seats &bull; Diesel</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORY 2: SEDANS -->
+        <div id="category-sedan" class="car-category-block space-y-6" data-type="sedan">
+            <div class="flex justify-between items-center border-b border-slate-200 pb-3 reveal-on-scroll" data-animation="animate__fadeIn">
+                <h3 class="text-xl font-bold text-slateTextDark flex items-center space-x-2">
+                    <i class="fa-solid fa-car-side text-brandAccent"></i>
+                    <span>Premium Sedans</span>
+                </h3>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Sedan 1 - Mysuru -->
+                <div onclick="openBooking('Honda City ZX', 2800, 'mysuru')" class="car-card bg-slateCard border border-slate-100 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group overflow-hidden cursor-pointer reveal-on-scroll" data-city="mysuru" data-animation="animate__fadeInUp">
+                    <div>
+                        <div class="relative w-full aspect-[16/9] overflow-hidden bg-slateBackground">
+                            <img src="https://cloudfront.alpes.one/public/666/8a8/b16/6668a8b16f504003367831.jpg" alt="Honda City" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 left-3 bg-brandNavbar/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm"><i class="fa-solid fa-location-dot text-brandAccent mr-1"></i>Mysuru Hub</span>
+                        </div>
+                        <div class="p-5 flex justify-between items-start">
+                            <h4 class="font-bold text-slateTextDark text-base group-hover:text-brandAccent transition-colors">Honda City ZX</h4>
+                            <span class="text-brandAccent font-bold text-sm whitespace-nowrap ml-2">₹2,800 <span class="text-slateTextMuted text-xs font-normal">/ day</span></span>
+                        </div>
+                    </div>
+                    <div class="mx-5 mb-5 text-slateTextMuted text-xs flex items-center space-x-1.5 border-t border-slate-100 pt-3">
+                        <i class="fa-solid fa-sliders"></i><span>Automatic &bull; 5 Seats &bull; Petrol</span>
+                    </div>
+                </div>
+
+                <!-- Sedan 2 - Pune -->
+                <div onclick="openBooking('Hyundai Verna Turbo', 3000, 'pune')" class="car-card bg-slateCard border border-slate-100 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group overflow-hidden cursor-pointer reveal-on-scroll" data-city="pune" data-animation="animate__fadeInUp">
+                    <div>
+                        <div class="relative w-full aspect-[16/9] overflow-hidden bg-slateBackground">
+                            <img src="https://images.jdmagicbox.com/quickquotes/images_main/verna-sx-opt-turbo-dct-bs6-petrol-itan-grey-272377939-vfvkf3hj.png" alt="Hyundai Verna" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 left-3 bg-brandNavbar/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm"><i class="fa-solid fa-location-dot text-brandAccent mr-1"></i>Pune Hub</span>
+                        </div>
+                        <div class="p-5 flex justify-between items-start">
+                            <h4 class="font-bold text-slateTextDark text-base group-hover:text-brandAccent transition-colors">Hyundai Verna Turbo</h4>
+                            <span class="text-brandAccent font-bold text-sm whitespace-nowrap ml-2">₹3,000 <span class="text-slateTextMuted text-xs font-normal">/ day</span></span>
+                        </div>
+                    </div>
+                    <div class="mx-5 mb-5 text-slateTextMuted text-xs flex items-center space-x-1.5 border-t border-slate-100 pt-3">
+                        <i class="fa-solid fa-sliders"></i><span>Automatic &bull; 5 Seats &bull; Petrol</span>
+                    </div>
+                </div>
+
+                <!-- Sedan 3 - Thiruvananthapuram -->
+                <div onclick="openBooking('Skoda Slavia', 3200, 'thiruvananthapuram')" class="car-card bg-slateCard border border-slate-100 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group overflow-hidden cursor-pointer reveal-on-scroll" data-city="thiruvananthapuram" data-animation="animate__fadeInUp">
+                    <div>
+                        <div class="relative w-full aspect-[16/9] overflow-hidden bg-slateBackground">
+                            <img src="https://cdn.skoda-auto.com/images/external/1c42198de3ef6be1c0d4c67e0ce55b87/DerivativeIntroductionModule/517a7c8aa96236dc9d8954f4916e42718d6bf87515b75d7ab74272b3bc3277bf/Default_bp1920_1.webp" alt="Skoda Slavia" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 left-3 bg-brandNavbar/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm"><i class="fa-solid fa-location-dot text-brandAccent mr-1"></i>Trivandrum Spot</span>
+                        </div>
+                        <div class="p-5 flex justify-between items-start">
+                            <h4 class="font-bold text-slateTextDark text-base group-hover:text-brandAccent transition-colors">Skoda Slavia 1.5 TSi</h4>
+                            <span class="text-brandAccent font-bold text-sm whitespace-nowrap ml-2">₹3,200 <span class="text-slateTextMuted text-xs font-normal">/ day</span></span>
+                        </div>
+                    </div>
+                    <div class="mx-5 mb-5 text-slateTextMuted text-xs flex items-center space-x-1.5 border-t border-slate-100 pt-3">
+                        <i class="fa-solid fa-sliders"></i><span>Manual &bull; 5 Seats &bull; Petrol</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORY 3: LUXURY -->
+        <div id="category-luxury" class="car-category-block space-y-6" data-type="luxury">
+            <div class="flex justify-between items-center border-b border-slate-200 pb-3 reveal-on-scroll" data-animation="animate__fadeIn">
+                <h3 class="text-xl font-bold text-slateTextDark flex items-center space-x-2">
+                    <i class="fa-solid fa-crown text-brandAccent"></i>
+                    <span>Luxury & Elite Sports</span>
+                </h3>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Luxury 1 - Mumbai -->
+                <div onclick="openBooking('BMW M4 Competition', 12000, 'mumbai')" class="car-card bg-slateCard border border-slate-100 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group overflow-hidden cursor-pointer reveal-on-scroll" data-city="mumbai" data-animation="animate__fadeInUp">
+                    <div>
+                        <div class="relative w-full aspect-[16/9] overflow-hidden bg-slateBackground">
+                            <img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80" alt="BMW M4" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 left-3 bg-brandNavbar/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm"><i class="fa-solid fa-location-dot text-brandAccent mr-1"></i>Mumbai Hub</span>
+                        </div>
+                        <div class="p-5 flex justify-between items-start">
+                            <h4 class="font-bold text-slateTextDark text-base group-hover:text-brandAccent transition-colors">BMW M4 Competition</h4>
+                            <span class="text-brandAccent font-bold text-sm whitespace-nowrap ml-2">₹12,000 <span class="text-slateTextMuted text-xs font-normal">/ day</span></span>
+                        </div>
+                    </div>
+                    <div class="mx-5 mb-5 text-slateTextMuted text-xs flex items-center space-x-1.5 border-t border-slate-100 pt-3">
+                        <i class="fa-solid fa-sliders"></i><span>4 Seats &bull; Tiptronic Paddle Shifters &bull; M-Tuned</span>
+                    </div>
+                </div>
+
+                <!-- Luxury 2 - Hubballi -->
+                <div onclick="openBooking('Mercedes-Benz C-Class', 9500, 'hubballi')" class="car-card bg-slateCard border border-slate-100 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group overflow-hidden cursor-pointer reveal-on-scroll" data-city="hubballi" data-animation="animate__fadeInUp">
+                    <div>
+                        <div class="relative w-full aspect-[16/9] overflow-hidden bg-slateBackground">
+                            <img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80" alt="Mercedes-Benz C-Class" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 left-3 bg-brandNavbar/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm"><i class="fa-solid fa-location-dot text-brandAccent mr-1"></i>Hubballi Space</span>
+                        </div>
+                        <div class="p-5 flex justify-between items-start">
+                            <h4 class="font-bold text-slateTextDark text-base group-hover:text-brandAccent transition-colors">Mercedes C-Class</h4>
+                            <span class="text-brandAccent font-bold text-sm whitespace-nowrap ml-2">₹9,500 <span class="text-slateTextMuted text-xs font-normal">/ day</span></span>
+                        </div>
+                    </div>
+                    <div class="mx-5 mb-5 text-slateTextMuted text-xs flex items-center space-x-1.5 border-t border-slate-100 pt-3">
+                        <i class="fa-solid fa-sliders"></i><span>5 Seats &bull; Automatic Luxury Glide</span>
+                    </div>
+                </div>
+
+                <!-- Luxury 3 - Kozhikode -->
+                <div onclick="openBooking('Audi A6 Matrix', 10500, 'kozhikode')" class="car-card bg-slateCard border border-slate-100 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group overflow-hidden cursor-pointer reveal-on-scroll" data-city="kozhikode" data-animation="animate__fadeInUp">
+                    <div>
+                        <div class="relative w-full aspect-[16/9] overflow-hidden bg-slateBackground">
+                            <img src="https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=600&q=80" alt="Audi A6" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 left-3 bg-brandNavbar/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm"><i class="fa-solid fa-location-dot text-brandAccent mr-1"></i>Kozhikode Yard</span>
+                        </div>
+                        <div class="p-5 flex justify-between items-start">
+                            <h4 class="font-bold text-slateTextDark text-base group-hover:text-brandAccent transition-colors">Audi A6 Matrix</h4>
+                            <span class="text-brandAccent font-bold text-sm whitespace-nowrap ml-2">₹10,500 <span class="text-slateTextMuted text-xs font-normal">/ day</span></span>
+                        </div>
+                    </div>
+                    <div class="mx-5 mb-5 text-slateTextMuted text-xs flex items-center space-x-1.5 border-t border-slate-100 pt-3">
+                        <i class="fa-solid fa-sliders"></i><span>5 Seats &bull; Automatic Matrix LED Suite</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- 5. FEATURES SECTION -->
+    <section id="features-section" class="bg-slateCard border-t border-b border-slate-200 py-12 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="flex items-start space-x-4 transform hover:scale-105 transition-transform duration-300 reveal-on-scroll" data-animation="animate__fadeInLeft">
+                <div class="bg-brandAccent text-white p-3.5 rounded-full flex items-center justify-center shadow-md shrink-0">
+                    <i class="fa-solid fa-car text-lg"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slateTextDark text-sm mb-1">State-Wide Cleared Network</h4>
+                    <p class="text-slateTextMuted text-xs leading-relaxed">Seamless inter-state permits across Maharashtra, Karnataka, and Kerala.</p>
+                </div>
+            </div>
+            <div class="flex items-start space-x-4 transform hover:scale-105 transition-transform duration-300 reveal-on-scroll" data-animation="animate__fadeInLeft" style="animation-delay: 0.15s;">
+                <div class="bg-brandAccent text-white p-3.5 rounded-full flex items-center justify-center shadow-md shrink-0">
+                    <i class="fa-solid fa-tags text-lg"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slateTextDark text-sm mb-1">Zero Hidden Charges</h4>
+                    <p class="text-slateTextMuted text-xs leading-relaxed">What you see is what you pay. Comprehensive insurance included.</p>
+                </div>
+            </div>
+            <div class="flex items-start space-x-4 transform hover:scale-105 transition-transform duration-300 reveal-on-scroll" data-animation="animate__fadeInLeft" style="animation-delay: 0.3s;">
+                <div class="bg-brandAccent text-white p-3.5 rounded-full flex items-center justify-center shadow-md shrink-0">
+                    <i class="fa-solid fa-shield-halved text-lg"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slateTextDark text-sm mb-1">Sanitized & Safe</h4>
+                    <p class="text-slateTextMuted text-xs leading-relaxed">Thoroughly detailed vehicles with 24/7 roadside assistance.</p>
+                </div>
+            </div>
+            <div class="flex items-start space-x-4 transform hover:scale-105 transition-transform duration-300 reveal-on-scroll" data-animation="animate__fadeInLeft" style="animation-delay: 0.45s;">
+                <div class="bg-brandAccent text-white p-3.5 rounded-full flex items-center justify-center shadow-md shrink-0">
+                    <i class="fa-regular fa-clock text-lg"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slateTextDark text-sm mb-1">Instant Self-Drive Pickup</h4>
+                    <p class="text-slateTextMuted text-xs leading-relaxed">Book a premium vehicle seamlessly in under 5 minutes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. FOOTER -->
+    <footer class="bg-brandNavbar text-slate-400 pt-16 pb-6 text-sm reveal-on-scroll" data-animation="animate__fadeIn">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+            <div class="space-y-4">
+                <a href="#" onclick="navigateToSection(event, 'body')" class="flex items-center space-x-2 text-xl font-bold tracking-wide text-white">
+                    <i class="fa-solid fa-arrows-spin text-brandAccent text-2xl"></i>
+                    <span>Loop<span class="text-brandAccent">Car</span></span>
+                </a>
+                <p class="text-xs leading-relaxed text-slate-400">
+                    Providing premium self-drive luxury and economy car rental experiences across Western and Southern India. Your drive, our passion.
+                </p>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-4 text-xs uppercase tracking-wider">Top Fleet Hubs</h4>
+                <ul class="space-y-2.5 text-xs grid grid-cols-2 gap-x-2">
+                    <li><a href="#" onclick="filterByCityDirect('bengaluru')" class="hover:text-white transition">Bengaluru</a></li>
+                    <li><a href="#" onclick="filterByCityDirect('mysuru')" class="hover:text-white transition">Mysuru</a></li>
+                    <li><a href="#" onclick="filterByCityDirect('kochi')" class="hover:text-white transition">Kochi</a></li>
+                    <li><a href="#" onclick="filterByCityDirect('thiruvananthapuram')" class="hover:text-white transition">Trivandrum</a></li>
+                    <li><a href="#" onclick="filterByCityDirect('mumbai')" class="hover:text-white transition">Mumbai</a></li>
+                    <li><a href="#" onclick="filterByCityDirect('pune')" class="hover:text-white transition">Pune</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-4 text-xs uppercase tracking-wider">Support Hub</h4>
+                <ul class="space-y-2.5 text-xs">
+                    <li><a href="#" class="hover:text-white transition">Interstate Guidelines</a></li>
+                    <li><a href="#" class="hover:text-white transition">Privacy Policy & Terms</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-4 text-xs uppercase tracking-wider">Contact Us</h4>
+                <ul class="space-y-3.5 text-xs">
+                    <li class="flex items-center space-x-3"><i class="fa-solid fa-location-dot text-brandAccent"></i><span>Indiranagar, Bengaluru, India</span></li>
+                    <li class="flex items-center space-x-3"><i class="fa-solid fa-phone text-brandAccent"></i><span>+91 80 4567 8901</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-slate-800 pt-6 text-center text-xs text-slate-500">
+            &copy; 2026 LoopCar India. All Rights Reserved.
+        </div>
+    </footer>
+
+
+    <!-- MODALS & RESERVATION SYSTEMS -->
+    
+    <!-- Login Modal -->
+    <div id="login-modal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 relative animate__animated animate__zoomIn animate__faster">
+            <button onclick="closeModal('login-modal')" class="absolute top-4 right-4 text-slateTextMuted hover:text-slateTextDark"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <h3 class="text-xl font-bold text-slateTextDark mb-4">Welcome Back</h3>
+            <form onsubmit="handleAuthSubmit(event, 'login-modal')" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slateTextDark mb-1">Email Address</label>
+                    <input type="email" required placeholder="name@domain.com" class="w-full text-sm border border-slate-200 rounded px-3 py-2 focus:outline-none focus:border-brandAccent">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slateTextDark mb-1">Password</label>
+                    <input type="password" required placeholder="••••••••" class="w-full text-sm border border-slate-200 rounded px-3 py-2 focus:outline-none focus:border-brandAccent">
+                </div>
+                <button type="submit" class="w-full bg-brandAccent hover:bg-brandAccentHover text-white py-2 rounded text-sm font-bold shadow transition">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signup-modal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 relative animate__animated animate__zoomIn animate__faster">
+            <button onclick="closeModal('signup-modal')" class="absolute top-4 right-4 text-slateTextMuted hover:text-slateTextDark"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <h3 class="text-xl font-bold text-slateTextDark mb-4">Create Account</h3>
+            <form onsubmit="handleAuthSubmit(event, 'signup-modal')" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slateTextDark mb-1">Full Name</label>
+                    <input type="text" required placeholder="Mehbooba" class="w-full text-sm border border-slate-200 rounded px-3 py-2 focus:outline-none focus:border-brandAccent">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slateTextDark mb-1">Email Address</label>
+                    <input type="email" required placeholder="name@domain.com" class="w-full text-sm border border-slate-200 rounded px-3 py-2 focus:outline-none focus:border-brandAccent">
+                </div>
+                <button type="submit" class="w-full bg-brandAccent hover:bg-brandAccentHover text-white py-2 rounded text-sm font-bold shadow transition">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Multi-Step Interactive Booking Engine Modal -->
+    <div id="booking-modal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 relative my-8 animate__animated animate__zoomIn animate__faster">
+            <button onclick="closeModal('booking-modal')" class="absolute top-4 right-4 text-slateTextMuted hover:text-slateTextDark"><i class="fa-solid fa-xmark text-lg"></i></button>
+            
+            <div id="booking-form-step">
+                <span class="bg-cyan-100 text-brandAccentHover text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Secure Booking Checkout</span>
+                <h3 id="modal-car-name" class="text-2xl font-extrabold text-slateTextDark mt-2">Car Variant</h3>
+                
+                <!-- Calculations Area -->
+                <div class="mt-4 p-4 bg-slateBackground rounded-lg border border-slate-200 space-y-3">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slateTextMuted">Base Rate per Day:</span>
+                        <span id="rate-display" class="font-bold text-slateTextDark">₹0</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slateTextMuted">Rental Duration Choice:</span>
+                        <div class="flex items-center space-x-1">
+                            <input type="number" id="form-duration-days" value="1" min="1" max="30" oninput="recalculateInvoiceTotal()" class="w-12 text-center font-semibold bg-white border border-slate-300 rounded p-0.5 text-xs text-slateTextDark focus:outline-none focus:border-brandAccent">
+                            <span class="text-slateTextMuted">Days</span>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-200 pt-2 flex justify-between items-center text-sm font-bold">
+                        <span class="text-slateTextDark">Estimated Gross Invoice:</span>
+                        <span id="total-invoice-display" class="text-brandAccent">₹0</span>
+                    </div>
+                </div>
+
+                <!-- Input Booking Fields -->
+                <form id="active-booking-form" onsubmit="processReservation(event)" class="mt-5 space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slateTextDark mb-1">Driver's Full Name</label>
+                            <input type="text" id="book-name" required value="Mehbooba" placeholder="As shown on license" class="w-full text-xs border border-slate-200 rounded px-3 py-2.5 focus:outline-none focus:border-brandAccent font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slateTextDark mb-1">Total Persons (Passengers)</label>
+                            <input type="number" id="book-persons" required min="1" max="8" value="1" class="w-full text-xs border border-slate-200 rounded px-3 py-2.5 focus:outline-none focus:border-brandAccent font-medium">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slateTextDark mb-1">Mobile Contact Phone</label>
+                            <input type="tel" id="book-phone" pattern="[6-9][0-9]{9}" required placeholder="10-digit Mobile Number" class="w-full text-xs border border-slate-200 rounded px-3 py-2.5 focus:outline-none focus:border-brandAccent">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slateTextDark mb-1">Indian Driving License</label>
+                            <input type="text" id="book-dl" required placeholder="DL-XXXXXXXXXXX" class="w-full text-xs border border-slate-200 rounded px-3 py-2.5 focus:outline-none focus:border-brandAccent">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slateTextDark mb-1">Assigned Pick-up Station</label>
+                        <select id="book-station" class="w-full text-xs border border-slate-200 rounded px-3 py-2.5 focus:outline-none focus:border-brandAccent bg-white">
+                            <!-- Karnataka Hubs -->
+                            <option value="Bengaluru Airport Hub (Bay 4)">Bengaluru Airport Terminal Bay 4</option>
+                            <option value="Mysuru Central Station Deck">Mysuru Central Station Deck</option>
+                            <option value="Hubballi Terminal Yard">Hubballi Terminal Yard</option>
+                            <!-- Kerala Hubs -->
+                            <option value="Kochi International Airport Counter">Kochi Int'l Airport Counter</option>
+                            <option value="Thiruvananthapuram Central Bay">Thiruvananthapuram Central Bay</option>
+                            <option value="Kozhikode City Center Station">Kozhikode City Center Station</option>
+                            <!-- Maharashtra Hubs -->
+                            <option value="Mumbai Chhatrapati Shivaji Hub">Mumbai CS International Hub</option>
+                            <option value="Pune Lohegaon Airport Bay">Pune Lohegaon Airport Bay</option>
+                            <option value="Nashik City Hub">Nashik City Hub</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-start space-x-2 pt-1">
+                        <input type="checkbox" id="terms" required class="mt-0.5 rounded accent-brandAccent text-white cursor-pointer">
+                        <label for="terms" class="text-[11px] text-slateTextMuted leading-snug cursor-pointer select-none">I confirm that all provided parameters match statutory transport regulations across Indian states.</label>
+                    </div>
+
+                    <button type="submit" class="w-full bg-brandAccent hover:bg-brandAccentHover text-white py-3 rounded-lg text-sm font-bold shadow-lg transition transform hover:-translate-y-0.5 mt-2">
+                        Complete Verified Reservation
+                    </button>
+                </form>
+            </div>
+
+            <!-- Success State Screen & Download Wrapper -->
+            <div id="booking-success-step" class="hidden text-center py-6 animate__animated animate__fadeIn">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h3 class="text-2xl font-extrabold text-slateTextDark">Booking Confirmed!</h3>
+                <p class="text-xs text-slateTextMuted mt-1 max-w-sm mx-auto">Your verification passes safety clearances. Your downloadable receipt is ready below.</p>
+                
+                <!-- The target element for the downloadable PDF -->
+                <div id="downloadable-receipt-pdf" class="mt-5 p-6 border border-dashed border-slate-300 rounded-xl bg-slateBackground text-left text-xs space-y-3 max-w-sm mx-auto text-slateTextMuted">
+                    <div class="border-b border-slate-300 pb-2 mb-2 flex justify-between items-center">
+                        <span class="font-bold text-slateTextDark tracking-wide uppercase text-[10px]">LoopCar India Receipt</span>
+                        <span class="text-[9px] bg-slate-300 px-1.5 py-0.5 rounded text-slateTextDark font-mono">CONFIRMED</span>
+                    </div>
+                    <p><strong class="text-slateTextDark">Driver's Name:</strong> <span id="summary-name">--</span></p>
+                    <p><strong class="text-slateTextDark">Total Persons:</strong> <span id="summary-persons">--</span></p>
+                    <p><strong class="text-slateTextDark">Driving License:</strong> <span id="summary-dl">--</span></p>
+                    <p><strong class="text-slateTextDark">Assigned Car:</strong> <span id="summary-car">--</span></p>
+                    <p><strong class="text-slateTextDark">Pickup Hub:</strong> <span id="summary-station">--</span></p>
+                    <div class="border-t border-slate-300 pt-2 flex justify-between items-center text-sm font-bold text-slateTextDark">
+                        <span>Total Paid (Gross):</span>
+                        <span id="summary-total" class="text-emerald-600">--</span>
+                    </div>
+                </div>
+
+                <!-- Action Button Grid -->
+                <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center max-w-sm mx-auto">
+                    <button onclick="downloadReceiptPDF()" class="w-full bg-brandAccent hover:bg-brandAccentHover text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow-md transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-file-pdf text-sm"></i>
+                        <span>Download Booking Receipt</span>
+                    </button>
+                    <button onclick="closeModal('booking-modal')" class="w-full bg-slateTextDark hover:bg-slate-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition">
+                        Dismiss View
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- SYSTEM SCRIPTS -->
+    <script>
+        let activeSelectedCarName = "";
+        let activeSelectedCarRate = 0;
+
+        // --- NAVIGATION ENGINE ---
+        function navigateToSection(event, targetId) {
+            event.preventDefault();
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                updateActiveNavigationState(event.target);
+            }
+        }
+
+        function updateActiveNavigationState(clickedElement) {
+            if (!clickedElement || !clickedElement.classList.contains('nav-link')) return;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('text-brandAccent', 'border-b-2', 'border-brandAccent', 'pb-1');
+                link.classList.add('hover:text-white');
+            });
+            clickedElement.classList.remove('hover:text-white');
+            clickedElement.classList.add('text-brandAccent', 'border-b-2', 'border-brandAccent', 'pb-1');
+        }
+
+        // --- APPLICATION DIALOG MODALS ---
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.body.classList.add('modal-active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.body.classList.remove('modal-active');
+            
+            if (id === 'booking-modal') {
+                setTimeout(() => {
+                    document.getElementById('booking-form-step').classList.remove('hidden');
+                    document.getElementById('booking-success-step').classList.add('hidden');
+                    document.getElementById('active-booking-form').reset();
+                    document.getElementById('book-name').value = "Mehbooba"; // Reset back to default
+                    document.getElementById('form-duration-days').value = 1;
+                }, 400);
+            }
+        }
+
+        function handleAuthSubmit(e, modalId) {
+            e.preventDefault();
+            closeModal(modalId);
+            alert("Authentication complete!");
+        }
+
+        // --- MULTI-LOCATION CAR FILTER ENGINE ---
+        function handleSearch(e) {
+            if(e) e.preventDefault();
+            
+            const cityFilter = document.getElementById('search-city').value;
+            const categoryFilter = document.getElementById('search-category').value;
+            const carCards = document.querySelectorAll('.car-card');
+            const blocks = document.querySelectorAll('.car-category-block');
+            
+            let totalVisibleCars = 0;
+
+            carCards.forEach(card => {
+                const cardCity = card.getAttribute('data-city');
+                const matchesCity = (cityFilter === 'all' || cardCity === cityFilter);
+                if (matchesCity) {
+                    card.classList.remove('hidden');
+                    totalVisibleCars++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            blocks.forEach(block => {
+                const matchesCategory = (categoryFilter === 'all' || block.getAttribute('data-type') === categoryFilter);
+                const visibleCardsInBlock = block.querySelectorAll('.car-card:not(.hidden)').length;
+
+                if (matchesCategory && visibleCardsInBlock > 0) {
+                    block.classList.remove('hidden');
+                } else {
+                    block.classList.add('hidden');
+                }
+            });
+
+            const warningBlock = document.getElementById('no-results');
+            if (totalVisibleCars === 0 || document.querySelectorAll('.car-category-block:not(.hidden)').length === 0) {
+                warningBlock.classList.remove('hidden');
+            } else {
+                warningBlock.classList.add('hidden');
+            }
+
+            document.getElementById('fleet-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function filterByCityDirect(cityName) {
+            document.getElementById('search-city').value = cityName;
+            document.getElementById('search-category').value = 'all';
+            handleSearch(null);
+        }
+
+        function resetSearch() {
+            document.getElementById('search-form').reset();
+            document.querySelectorAll('.car-card').forEach(c => c.classList.remove('hidden'));
+            document.querySelectorAll('.car-category-block').forEach(b => b.classList.remove('hidden'));
+            document.getElementById('no-results').classList.add('hidden');
+        }
+
+        // --- BOOKING ENGINE ---
+        function openBooking(carName, standardDayPrice, contextCity) {
+            activeSelectedCarName = carName;
+            activeSelectedCarRate = parseInt(standardDayPrice);
+
+            document.getElementById('modal-car-name').innerText = carName;
+            document.getElementById('rate-display').innerText = "₹" + activeSelectedCarRate.toLocaleString('en-IN');
+            
+            const stationSelect = document.getElementById('book-station');
+            
+            // Context auto-matching logic
+            if (contextCity === 'bengaluru') stationSelect.value = "Bengaluru Airport Hub (Bay 4)";
+            if (contextCity === 'mysuru') stationSelect.value = "Mysuru Central Station Deck";
+            if (contextCity === 'hubballi') stationSelect.value = "Hubballi Terminal Yard";
+            if (contextCity === 'kochi') stationSelect.value = "Kochi International Airport Counter";
+            if (contextCity === 'thiruvananthapuram') stationSelect.value = "Thiruvananthapuram Central Bay";
+            if (contextCity === 'kozhikode') stationSelect.value = "Kozhikode City Center Station";
+            if (contextCity === 'mumbai') stationSelect.value = "Mumbai Chhatrapati Shivaji Hub";
+            if (contextCity === 'pune') stationSelect.value = "Pune Lohegaon Airport Bay";
+            if (contextCity === 'nashik') stationSelect.value = "Nashik City Hub";
+
+            const rootSearchDaysInput = document.getElementById('pickup-date').value;
+            const rootDropoffDaysInput = document.getElementById('dropoff-date').value;
+            if(rootSearchDaysInput && rootDropoffDaysInput) {
+                const daysDifference = Math.ceil(Math.abs(new Date(rootDropoffDaysInput) - new Date(rootSearchDaysInput)) / (1000 * 60 * 60 * 24));
+                document.getElementById('form-duration-days').value = daysDifference > 0 ? daysDifference : 1;
+            }
+
+            recalculateInvoiceTotal();
+            openModal('booking-modal');
+        }
+
+        function recalculateInvoiceTotal() {
+            const daysCount = parseInt(document.getElementById('form-duration-days').value) || 1;
+            const adjustedCalculatedInvoice = activeSelectedCarRate * daysCount;
+            document.getElementById('total-invoice-display').innerText = "₹" + adjustedCalculatedInvoice.toLocaleString('en-IN');
+        }
+
+        function processReservation(e) {
+            e.preventDefault();
+
+            const driverName = document.getElementById('book-name').value;
+            const personsCount = document.getElementById('book-persons').value;
+            const licenseNo = document.getElementById('book-dl').value;
+            const days = parseInt(document.getElementById('form-duration-days').value) || 1;
+            const computedInvoiceString = "₹" + (activeSelectedCarRate * days).toLocaleString('en-IN');
+            const targetStationChoice = document.getElementById('book-station').value;
+
+            // Injected dynamic text properties into PDF receipt container
+            document.getElementById('summary-name').innerText = driverName;
+            document.getElementById('summary-persons').innerText = personsCount;
+            document.getElementById('summary-dl').innerText = licenseNo;
+            document.getElementById('summary-car').innerText = activeSelectedCarName;
+            document.getElementById('summary-station').innerText = targetStationChoice;
+            document.getElementById('summary-total').innerText = computedInvoiceString;
+
+            document.getElementById('booking-form-step').classList.add('hidden');
+            document.getElementById('booking-success-step').classList.remove('hidden');
+        }
+
+        // --- DOWNLOAD CONVERSION CONTROLLER (PDF) ---
+        function downloadReceiptPDF() {
+            const element = document.getElementById('downloadable-receipt-pdf');
+            const options = {
+                margin:       10,
+                filename:     'LoopCar_Booking_Receipt.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' }
+            };
+
+            html2pdf().set(options).from(element).save();
+        }
+
+        // --- INTERSECTION OBSERVER ANIMATIONS ---
+        document.addEventListener("DOMContentLoaded", function() {
+            const scrollElements = document.querySelectorAll(".reveal-on-scroll");
+            const elementInView = (el, divisor = 1) => {
+                return (el.getBoundingClientRect().top <= (window.innerHeight || document.documentElement.clientHeight) / divisor);
+            };
+            const displayScrollElement = (element) => {
+                const animationClass = element.getAttribute("data-animation") || "animate__fadeInUp";
+                element.classList.add("animate__animated", animationClass);
+                element.style.opacity = "1";
+            };
+            const handleScrollAnimation = () => {
+                scrollElements.forEach((el) => {
+                    if (elementInView(el, 1.15)) displayScrollElement(el);
+                });
+            };
+            window.addEventListener("scroll", handleScrollAnimation);
+            handleScrollAnimation();
+        });
+    </script>
+</body>
+</html>
